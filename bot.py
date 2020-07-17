@@ -294,6 +294,7 @@ class ibCleanerBot:
         context.bot_data[message.poll.id]["message_id"] = message.message_id
         context.bot_data[message.poll.id]["sender_id"] = original_member.user.id
         context.bot_data[message.poll.id]["ban"] = ban
+        context.bot_data[message.poll.id]["voters"] = {}
 
     def sched_delete(self, context):
         job_ctx = context.job.context
@@ -302,7 +303,6 @@ class ibCleanerBot:
     @run_async
     def receive_poll_answer(self, update, context):
         """Summarize a users poll vote"""
-        print(update)
         answer = update.poll_answer
         poll_id = answer.poll_id
         selected_options = answer.option_ids
@@ -314,10 +314,18 @@ class ibCleanerBot:
             timeout = chat_data.delete_timeout or self.DEFAULT_DELETE_TIMEOUT
             vote_count = chat_data.vote_count or self.DEFAULT_VOTE_COUNT
 
+        if len(selected_options) < 1:
+            context.bot_data[poll_id]["count"][
+                context.bot_data[poll_id]["voters"][update.effective_user.id]
+            ] -= 1
+            return
+
         if selected_options[0] == 0:
             context.bot_data[poll_id]["count"]["yes"] += 1
+            context.bot_data[poll_id]["voters"][update.effective_user.id] = "yes"
         elif selected_options[0] == 1:
             context.bot_data[poll_id]["count"]["no"] += 1
+            context.bot_data[poll_id]["voters"][update.effective_user.id] = "no"
 
         # Close poll after three participants voted
         if (
