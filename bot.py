@@ -72,7 +72,7 @@ class ibCleanerBot:
             Filters.regex("^@" + updater.bot.username + "$"), self.askdelete
         )
         askdelete_ban_handler = MessageHandler(
-            Filters.regex("^@" + updater.bot.username + " ban$"), self.askdelete_ban
+            Filters.regex("^@" + updater.bot.username + " +ban$"), self.askdelete_ban
         )
         set_handler = CommandHandler("settings", self.set_cmd)
         dispatcher.add_handler(askdelete_handler)
