@@ -42,7 +42,9 @@ def admin_only(func):
         original_member = args[2].bot.get_chat_member(
             args[1].effective_chat.id, args[1].effective_user.id
         )
-        if original_member["status"] not in ("creator", "administrator"):
+        if args[1].effective_user.id == args[1].effective_chat.id:
+            pass
+        elif original_member["status"] not in ("creator", "administrator"):
             args[2].bot.answer_callback_query(
                 callback_query_id=args[1].callback_query.id,
                 text=i18n.t("not_permitted"),
