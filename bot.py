@@ -2,6 +2,7 @@ import os
 import logging
 import i18n
 import json
+from time import time
 
 from telegram.ext import (
     Updater,
@@ -261,6 +262,9 @@ class ibCleanerBot:
     def ask_func(self, update, context, ban=False):
         if not update.message.reply_to_message:
             return
+        if update.message.reply_to_message.date - time() > (2 * 24 * 60 * 60):
+            return
+
         update.message.delete()
 
         del_msg_id = update.message.reply_to_message.message_id
